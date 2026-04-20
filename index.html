@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <title>Мій Букінг</title>
+    <style>
+        body { font-family: sans-serif; padding: 20px; background: #f4f4f4; }
+        .hotel-card { background: white; padding: 15px; margin-bottom: 10px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+    </style>
+</head>
+<body>
+    <h1>Список готелів</h1>
+    <div id="hotels-list">Завантаження...</div>
+
+
+    <script>
+        // Ця функція йде на бекенд за даними
+        async function loadHotels() {
+            try {
+                // Міняй URL на свій, якщо він інший
+                const response = await fetch('http://127.0.0.1:8000/hotels');
+                const hotels = await response.json();
+                
+                const listDiv = document.getElementById('hotels-list');
+                listDiv.innerHTML = ''; // Очищуємо текст "Завантаження"
+
+                hotels.forEach(hotel => {
+                    const card = document.createElement('div');
+                    card.className = 'hotel-card';
+                    card.innerHTML = `<h3>${hotel.title}</h3><p>Ціна: ${hotel.price} грн</p><button onclick="deleteHotel(${hotel.id})">Видалити</button>`;
+
+                    listDiv.appendChild(card);
+                });
+            } catch (error) {
+                console.error("Помилка:", error);
+                document.getElementById('hotels-list').innerText = "Не вдалося завантажити готелі. Перевір, чи запущений бекенд!";
+            }
+        }
+
+        async function deleteHotel(hotelId) {
+            await fetch(`http://127.0.0.1:8000/hotels/${hotelId}`, { method: 'DELETE' });
+            loadHotels(); // Магія: одразу оновлюємо список на екрані
+    }
+            
+        
+
+        // Запускаємо функцію при завантаженні сторінки
+        loadHotels();
+    </script>
+</body>
+</html>
