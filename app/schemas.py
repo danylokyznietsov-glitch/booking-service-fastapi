@@ -13,3 +13,8 @@ class SHostel(BaseModel):
 class SUserRegister(BaseModel):
     email: EmailStr
     password: str
+    
+    
+class SUserInfo(BaseModel):
+    id: int
+    email: EmailStr

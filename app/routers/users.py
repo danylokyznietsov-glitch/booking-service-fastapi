@@ -1,11 +1,13 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.database import get_async_session
-from app.schemas import SUserRegister
+from app.schemas import SUserRegister, SUserInfo
 from fastapi import HTTPException
 import app.crud as crud
 from app.auth import get_password_hash
-from app.auth import authenticate_user, create_access_token
+from app.auth import authenticate_user, create_access_token, get_current_user
+from fastapi.security import OAuth2PasswordRequestForm
+
 
 
 
@@ -24,14 +26,19 @@ async def register_user(user_data: SUserRegister, session: AsyncSession = Depend
 
 
 @router.post("/login")
-async def login_user(user_data: SUserRegister, session: AsyncSession = Depends(get_async_session)):
-    user = await authenticate_user(session=session, email=user_data.email, password=user_data.password)
+async def login_user(user_data: OAuth2PasswordRequestForm = Depends(), session: AsyncSession = Depends(get_async_session)):
+    user = await authenticate_user(session=session, email=user_data.username, password=user_data.password)
     if not user:
         raise HTTPException(status_code=401, detail="Неправильна пошта або пароль")
     token_data = {"sub": str(user.id)}
     access_token = create_access_token(token_data)
     return {"access_token": access_token, "token_type": "bearer"}
 
+
+
+@router.get("/me", response_model=SUserInfo)
+async def get_my_profile(current_user = Depends(get_current_user)):
+    return current_user 
 
     
     

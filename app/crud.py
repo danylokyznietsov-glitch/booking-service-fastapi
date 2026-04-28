@@ -53,3 +53,12 @@ async def create_user(session: AsyncSession, email: str, hashed_password: str):
     session.add(create)
     await session.commit()
     return create
+
+
+
+
+
+async def get_user_by_id(session: AsyncSession, user_id: int):
+    query = select(User).where(User.id == user_id)
+    result = await session.execute(query)
+    return result.scalar_one_or_none()
