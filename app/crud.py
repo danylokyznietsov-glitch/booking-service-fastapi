@@ -1,7 +1,7 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 from app.models import Hotel, User
-from app.schemas import SHostel
+from app.schemas import SHotel
 
 
 
@@ -24,7 +24,7 @@ async def delete_hotel(session: AsyncSession, hotel_id: int):
 
 
 
-async def put_hotel(session: AsyncSession, hotel_id: int, hotel_data: SHostel):
+async def put_hotel(session: AsyncSession, hotel_id: int, hotel_data: SHotel):
     hotel_to_update = await session.get(Hotel, hotel_id)
     if not hotel_to_update:
         return False
@@ -35,10 +35,18 @@ async def put_hotel(session: AsyncSession, hotel_id: int, hotel_data: SHostel):
     return True
 
 
-async def create_hotel(session: AsyncSession, hotel: SHostel):
-    new_hotel = Hotel(title=hotel.title, price=hotel.price)
+async def create_hotel(session: AsyncSession, hotel: SHotel):
+    new_hotel = Hotel(
+        name=hotel.name,
+        location=hotel.location,
+        services=hotel.services,
+        rooms_quantity=hotel.rooms_quantity,
+        image_id=hotel.image_id
+    )
     session.add(new_hotel)
     await session.commit()
+    await session.refresh(new_hotel)
+    
     return new_hotel
 
 
