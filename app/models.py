@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Mapped, mapped_column
 from .database import Base
-from sqlalchemy import JSON
+from sqlalchemy import JSON, ForeignKey
 
 
 
@@ -28,6 +28,26 @@ class User(Base):
     email: Mapped[str] = mapped_column(unique=True)
     
     hashed_password: Mapped[str]
+    
+    
+    
+class Room(Base):
+    
+    __tablename__ = "rooms"
+    
+    id: Mapped[int] = mapped_column(primary_key=True)
+    
+    hotel_id: Mapped[int] = mapped_column(ForeignKey("hotels.id"))
+    
+    title: Mapped[str]
+    
+    description: Mapped[str]
+    
+    price: Mapped[str]
+    
+    quantity: Mapped[int]
+    
+    
     
     
     
